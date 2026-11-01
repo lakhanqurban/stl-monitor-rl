@@ -1,0 +1,39 @@
+# Training configuration for the MuJoCo locomotion policies.
+# The paper trains Ant-v5 and HalfCheetah-v5 policies for 200,000 steps.
+
+training:
+  algorithm: "ppo"
+  total_timesteps: 200_000
+  n_seeds: 5
+  seeds: [0, 42, 123, 456, 789]
+
+  # PPO hyperparameters
+  ppo:
+    learning_rate: 3.0e-4
+    n_steps: 2048
+    batch_size: 64
+    n_epochs: 10
+    gamma: 0.99
+    gae_lambda: 0.95
+    clip_range: 0.2
+    ent_coef: 0.0
+    vf_coef: 0.5
+    max_grad_norm: 0.5
+
+  # Environment
+  env:
+    id: "Ant-v5"
+    render_mode: null
+    frame_skip: 5
+    max_episode_steps: 1000
+
+  # Logging
+  logging:
+    log_interval: 10_000
+    eval_interval: 50_000
+    n_eval_episodes: 10
+    save_checkpoints: [250_000, 500_000, 1_000_000, 2_000_000]
+
+  # Output
+  output_dir: "data/checkpoints"
+  log_dir: "data/results/tensorboard"

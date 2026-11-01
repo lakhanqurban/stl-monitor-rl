@@ -1,0 +1,128 @@
+Metadata-Version: 2.4
+Name: predictive-stl-monitoring
+Version: 0.1.0
+Summary: Beyond Ensemble Disagreement: Predictive STL Monitoring of RL Locomotion under Distribution Shift
+License: MIT License
+        
+        Copyright (c) 2026 Qurban
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: gymnasium[mujoco]<2,>=1.0
+Requires-Dist: mujoco>=3.1
+Requires-Dist: numpy>=1.24
+Requires-Dist: pandas>=2.0
+Requires-Dist: pyarrow>=14
+Requires-Dist: PyYAML>=6
+Requires-Dist: protobuf<5,>=3.20
+Requires-Dist: rtamt>=0.3.5
+Requires-Dist: stable-baselines3<3,>=2.7
+Requires-Dist: torch>=2.2
+Requires-Dist: matplotlib>=3.7
+Requires-Dist: tqdm>=4.65
+Requires-Dist: tensorboard>=2.14
+Provides-Extra: dev
+Requires-Dist: pytest>=7; extra == "dev"
+Dynamic: license-file
+
+# Predictive STL Monitoring of RL Locomotion
+
+Research code accompanying **“Beyond Ensemble Disagreement: Predictive STL Monitoring of RL Locomotion under Distribution Shift.”** The project evaluates closed-loop, world-model-based Signal Temporal Logic (STL) monitoring on MuJoCo Ant-v5 and HalfCheetah-v5.
+
+The experiments compare predicted STL robustness with STL-, observation-, and latent-space ensemble disagreement under external forces, observation noise, mass changes, and other shifts. The primary analysis uses PPO seeds `0`, `42`, and `123`; the legacy evaluation scripts retain their separate single-seed protocol.
+
+## Requirements and installation
+
+- Python 3.11 or later
+- MuJoCo-supported operating system
+- CUDA is optional; CPU execution is supported but world-model training is slower
+
+```bash
+git clone <your-repository-url>
+cd stl-monitoring-main
+python -m venv .venv
+# Activate the environment, then:
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
+```
+
+For CUDA-specific PyTorch builds, install the appropriate PyTorch wheel for your system before installing this project.
+
+## Reproducing the evaluations
+
+The paper's evaluation scripts are `scripts/corl_extension_eval.py` and `scripts/corl_review2_eval.py`. They expect trained PPO checkpoints and world-model ensembles under `data/`; those binary artifacts are not included in this source snapshot.
+
+Train PPO policies for the three primary seeds (repeat for both environment IDs):
+
+```bash
+python -m src.training.train_baseline --env_id Ant-v5 --seed 0 --total_timesteps 200000 --output_dir data/checkpoints
+python -m src.training.train_baseline --env_id Ant-v5 --seed 42 --total_timesteps 200000 --output_dir data/checkpoints
+python -m src.training.train_baseline --env_id Ant-v5 --seed 123 --total_timesteps 200000 --output_dir data/checkpoints
+
+python -m src.training.train_baseline --env_id HalfCheetah-v5 --seed 0 --total_timesteps 200000 --output_dir data/checkpoints_halfcheetah
+python -m src.training.train_baseline --env_id HalfCheetah-v5 --seed 42 --total_timesteps 200000 --output_dir data/checkpoints_halfcheetah
+python -m src.training.train_baseline --env_id HalfCheetah-v5 --seed 123 --total_timesteps 200000 --output_dir data/checkpoints_halfcheetah
+```
+
+Then train the world-model ensemble and run the primary analysis:
+
+```bash
+python scripts/train_ensemble.py --env Ant-v5
+python scripts/train_ensemble.py --env HalfCheetah-v5
+
+python scripts/corl_review2_eval.py --env HalfCheetah-v5 --seeds 0 42 123 --episodes 10 --horizons 10 20 --extra --out data/results/corl_review2_hc.json
+python scripts/corl_review2_eval.py --env Ant-v5 --seeds 0 42 123 --episodes 10 --horizons 10 --extra --out data/results/corl_review2_ant.json
+```
+
+The extension evaluator provides the additional disagreement baselines and ablations:
+
+```bash
+python scripts/corl_extension_eval.py --env all --seeds 0 42 123 --episodes 10 --horizons 10 20 --extra --out data/results/corl_extension.json
+```
+
+These runs are computationally intensive. The output summaries are written under `data/results/`. The scripts require model checkpoints at the paths documented above; use Git LFS or a GitHub Release for large model artifacts rather than committing them as ordinary Git objects.
+
+## Tests
+
+Run the smoke tests from the repository root:
+
+```bash
+python -m pytest -q
+```
+
+## Repository layout
+
+```text
+configs/       STL properties, training, and perturbation settings
+scripts/       World-model training, paper evaluation, and analysis scripts
+src/           Environment wrappers, STL monitors, training, and evaluation code
+tests/         Smoke tests
+data/          Locally generated checkpoints, ensembles, and evaluation outputs
+```
+
+## Scope
+
+This repository supports the paper's simulated MuJoCo experiments. It does not provide formal safety guarantees, and its STL specifications are not claims about general physical safety. See the paper for the full protocol, interpretation, and limitations.
+
+## License
+
+Released under the MIT License; see [LICENSE](LICENSE).

@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "predictive-stl-monitoring"
+version = "0.1.0"
+description = "Predictive STL monitoring for MuJoCo locomotion policies under distribution shift"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+dependencies = [
+    "gymnasium[mujoco]>=1.0,<2",
+    "mujoco>=3.1",
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "pyarrow>=14",
+    "PyYAML>=6",
+    "protobuf>=3.20,<5",
+    "rtamt>=0.3.5",
+    "stable-baselines3>=2.7,<3",
+    "torch>=2.2",
+    "matplotlib>=3.7",
+    "tqdm>=4.65",
+    "tensorboard>=2.14",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,70 @@
+# STL Safety Property Specifications
+# Each property is defined as an STL formula with parameters
+# NOTE: RTAMT requires bounded time intervals for online monitoring
+# Thresholds calibrated to Ant-v5 nominal behavior (P95-based)
+
+properties:
+  stability_roll:
+    name: "Roll Stability"
+    description: "Roll angle stays within ±1.0 rad for the full episode"
+    formula: "G[0,1000](roll >= {neg_threshold} and roll <= {pos_threshold})"
+    variables:
+      roll: "body_roll"
+    parameters:
+      neg_threshold: -1.0
+      pos_threshold: 1.0
+    weight: 1.0
+
+  stability_pitch:
+    name: "Pitch Stability"
+    description: "Pitch angle stays within ±1.0 rad for the full episode"
+    formula: "G[0,1000](pitch >= {neg_threshold} and pitch <= {pos_threshold})"
+    variables:
+      pitch: "body_pitch"
+    parameters:
+      neg_threshold: -1.0
+      pos_threshold: 1.0
+    weight: 1.0
+
+  no_falls:
+    name: "No Falls"
+    description: "Base height stays above 0.4m minimum for the full episode"
+    formula: "G[0,1000](height > {h_min})"
+    variables:
+      height: "body_height"
+    parameters:
+      h_min: 0.4
+    weight: 1.0
+
+  contact_safety:
+    name: "Contact Safety"
+    description: "At most 3 feet airborne at any time (at least 1 foot in contact)"
+    formula: "G[0,1000](airborne_count <= {max_airborne})"
+    variables:
+      airborne_count: "n_airborne_feet"
+    parameters:
+      max_airborne: 3
+    weight: 0.8
+
+  velocity_tracking:
+    name: "Velocity Tracking"
+    description: "Forward velocity stays within ±4.0 m/s"
+    formula: "G[0,1000](velocity_x >= {neg_tolerance} and velocity_x <= {pos_tolerance})"
+    variables:
+      velocity_x: "body_velocity_x"
+    parameters:
+      neg_tolerance: -4.0
+      pos_tolerance: 4.0
+    weight: 0.5
+
+  recovery_bound:
+    name: "Recovery Bound"
+    description: "After a perturbation (height drop below 0.45m), body must recover to safe height (above 0.5m) within T steps"
+    formula: "G[0,1000]((height <= {h_trigger}) -> F[0,{T}](height > {h_min}))"
+    variables:
+      height: "body_height"
+    parameters:
+      h_trigger: 0.45
+      h_min: 0.5
+      T: 50
+    weight: 0.8
