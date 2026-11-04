@@ -8,6 +8,8 @@
 [![Gymnasium 1.0+](https://img.shields.io/badge/Gymnasium-1.0%2B-0081A5.svg)](https://gymnasium.farama.org/)
 [![MuJoCo 3.1+](https://img.shields.io/badge/MuJoCo-3.1%2B-6C48A8.svg)](https://mujoco.org/)
 [![RTAMT 0.3.5+](https://img.shields.io/badge/RTAMT-0.3.5%2B-555555.svg)](https://github.com/yalctse/rtamt)
+![Ant-v5](https://img.shields.io/badge/Environment-Ant--v5-blue)
+![HalfCheetah-v5](https://img.shields.io/badge/Environment-HalfCheetah--v5-green)
 
 Code and saved results for **“Beyond Ensemble Disagreement: Predictive STL Monitoring of RL Locomotion under Distribution Shift.”** The project evaluates whether ensemble disagreement helps assess predicted STL robustness for frozen reinforcement-learning locomotion policies under distribution shift.
 
