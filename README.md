@@ -1,5 +1,5 @@
 # Beyond Ensemble Disagreement
-
+[![arXiv](https://img.shields.io/badge/arXiv-paper-b31b1b.svg)](https://arxiv.org/abs/2611.02218)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-2ea44f.svg)](LICENSE)
 [![CoRL 2026](https://img.shields.io/badge/CoRL-2026-6f42c1.svg)](https://www.corl.org/)
@@ -126,7 +126,18 @@ python -m pytest -q
 
 ## Citation
 
-Qurban Ali, Badaruddin Chachar, and Maqsood Ali. *Beyond Ensemble Disagreement: Predictive STL Monitoring of RL Locomotion under Distribution Shift.* CoRL 2026 manuscript.(to be updated).
+If you find this work useful, please cite it as:
+
+```bibtex
+@misc{ali2026ensembledisagreementpredictivestl,
+  title         = {Beyond Ensemble Disagreement: Predictive STL Monitoring of RL Locomotion under Distribution Shift},
+  author        = {Qurban Ali and Badaruddin Chachar and Maqsood Ali and Sajjad Ali Rajper},
+  year          = {2026},
+  eprint        = {2611.02218},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.RO},
+  url           = {https://arxiv.org/abs/2611.02218}
+}
 
 ## License
 
